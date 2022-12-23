@@ -1,8 +1,9 @@
 const Product=require("../models/productModel");
-
+const SearchSort=require("../utils/SearchSort");
 //Add a poduct
 exports.addProduct=async(req,res,next)=>{
 try{
+    
     const product= await Product.create(req.body);
     return res.status(200).json({
         success:true,
@@ -16,7 +17,11 @@ try{
 
 exports.getAllProducts=async (req,res,next)=>{
     try{
-    const products=await Product.find();
+        //  console.log(req.query);
+         const searchSort =new SearchSort(Product.find(), req.query)
+         const count = await Product.count();
+    const products = await searchSort.search().filter().pagination(5).query;
+
     return res.status(200).json({
         meaasage:"Success",
         products,
